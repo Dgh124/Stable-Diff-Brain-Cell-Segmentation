@@ -43,7 +43,7 @@ Once more, the math behind this model is very complex and based on the 2020 pape
 
 https://arxiv.org/abs/2006.11239
 
-After hundreds of epochs of training and tweaking the diffusion process (removing unecessary residual and attention blocks, increasing the number of neural net layers for time embeddings (so time embeddings are added to the latent vector in steps of (1, 320) -> (320, 640) -> (640, 1024) rather than jumping from (1,320) -> (320,1024)). 
+After hundreds of epochs of training and tweaking the diffusion process (removing unecessary residual and attention blocks, increasing the number of neural net layers for time embeddings (so time embeddings are added to the latent vector in steps of (1, 320) -> (320, 640) -> (640, 1024) rather than jumping from (1,320) -> (320,1024)). Training was performed with 1000 timesteps, and sampling from the model works quite well with just 50.
 
 ![WhatsApp Image 2025-01-09 at 16 31 17](https://github.com/user-attachments/assets/4e635200-0af4-47d1-88df-bf7077e8c5fe)
 
