@@ -22,7 +22,7 @@ Below is a progression of model improvement in reconstructing images over time.
     
 ![WhatsApp Image 2024-11-01 at 14 44 32](https://github.com/user-attachments/assets/89fc4aaf-f90e-4e88-910e-3c60ce8dfb35)
 
-And here are two samples with the highest performing model. A slight amount of noise sampled from a normal distr. is utilized in the process and the model learns to discern this noise and reconstruct from the latent vectors.
+And here are two samples with the highest performing model. A slight amount of noise sampled from a normal distr. is utilized in the encoding process and the model learns to discern this noise and reconstruct from the latent vectors.
 ![Screenshot 2025-01-28 at 4 04 54 PM](https://github.com/user-attachments/assets/cc747ac2-a54b-4656-875a-37c025150158)
 
 ![Screenshot 2025-01-28 at 4 07 24 PM](https://github.com/user-attachments/assets/e70053b3-c2ea-40f1-a2ba-e6f01f200e7b)
