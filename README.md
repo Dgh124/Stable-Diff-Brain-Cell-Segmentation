@@ -45,6 +45,8 @@ https://arxiv.org/abs/2006.11239
 
 After hundreds of epochs of training and tweaking the diffusion process (removing unecessary residual and attention blocks, increasing the number of neural net layers for time embeddings (so time embeddings are added to the latent vector in steps of (1, 320) -> (320, 640) -> (640, 1024) rather than jumping from (1,320) -> (320,1024)). 
 
+![WhatsApp Image 2025-01-09 at 16 31 17](https://github.com/user-attachments/assets/4e635200-0af4-47d1-88df-bf7077e8c5fe)
+
 ## Image Segmentation
  
 ![Screenshot 2025-01-28 at 3 45 37 PM](https://github.com/user-attachments/assets/6c120037-6209-436b-a6c8-a8140d811a0d)
