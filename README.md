@@ -28,6 +28,8 @@ And here are two samples with the highest performing model. A slight amount of n
 ![Screenshot 2025-01-28 at 4 07 24 PM](https://github.com/user-attachments/assets/e70053b3-c2ea-40f1-a2ba-e6f01f200e7b)
 
  
- What has been accomplished thus far, is a modified Stable Diffusion model that produces 
+# Stable Diffusion - Diffusion portion
+
+During stable diffusion, noise is first added according to a beta-scheduler. This algorithm also encodes a timestep vector at which the noise was added (positional encoding), s.t the model is given context to infer how much noise is present based on the time progression. 
  
 ![Screenshot 2025-01-28 at 3 45 37 PM](https://github.com/user-attachments/assets/6c120037-6209-436b-a6c8-a8140d811a0d)
