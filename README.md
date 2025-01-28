@@ -20,6 +20,7 @@ The development process went as follows:
     - **Loss function**: MSE + beta * KL Divergence
     - **MSE** is used to find mean squared error of the difference between each pixel in input image & output
     - **KL** divergence term calculates distance from one distribution to another, in this case I used normal distr. (mean=0, std=1.0)
+    - __Optimizer__: SDG + lr-scheduler 
  2. Loss reached a minimum of ~0.003076
 
 Below is a progression of model improvement in reconstructing images over time.
@@ -48,5 +49,9 @@ After hundreds of epochs of training and tweaking the diffusion process (removin
 ![WhatsApp Image 2025-01-09 at 16 31 17](https://github.com/user-attachments/assets/4e635200-0af4-47d1-88df-bf7077e8c5fe)
 
 ## Image Segmentation
+
+This model follows the standard U-net architecture. It utilizes encode/decode blocks + residual to capture relevant details about cell shapes. <br>
+* __Loss function__: binary cross entropy + iou (intersection over union)
+* __Optimizer__: Adam + lr-scheduler
  
 ![Screenshot 2025-01-28 at 3 45 37 PM](https://github.com/user-attachments/assets/6c120037-6209-436b-a6c8-a8140d811a0d)
