@@ -11,7 +11,7 @@ A couple outlining features about the project:
 
 # How were the models trained?
 
-I initially trained the img. segmentation model and VAE on my Macbook MPS. When the intensity of the project increased, I moved to Google Colab and trained on Nvidia GPUs. I currently use Georgia Tech's PACE-ICE cluster and train on the GPUs they provide (likewise Nvidia). My favorite go to has been the L40 with around ~25g of ram.
+I initially trained the img. segmentation model and VAE on my Macbook MPS. When the intensity of the project increased, I moved to Google Colab and trained on Nvidia GPUs. I currently use Georgia Tech's PACE-ICE cluster and train on the CUDA enabled GPUs they provide (likewise Nvidia). My favorite go to has been the L40 with around ~25g of ram.
 
 # Stable Diffusion - Variational Autoencoder portion
 
