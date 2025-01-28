@@ -37,11 +37,13 @@ And here are two samples with the highest performing model. A slight amount of n
 During stable diffusion, noise is first added according to a beta-scheduler. This algorithm also encodes a timestep vector at which the noise was added (positional encoding), s.t the model is given context to infer how much noise is present based on the time embedding. Below is a visual overview of the diffusion process this project follows, without the use of CLIP text embeddings (no need to train on a prompt - all images are of brain cells).
 
 <img width="1033" alt="Screenshot 2025-01-28 at 5 09 33 PM" src="https://github.com/user-attachments/assets/808c2cc6-5470-4618-906a-0ba3b6da21b3" />
-Courtesy of Umar Jamil 
+Courtesy of Umar Jamil <br>
 
 Once more, the math behind this model is very complex and based on the 2020 paper "Denoising and Diffusing Probabalistic Models" by Jonathan Ho, Ajay Jain, Pieter Abbeel. The pdf of this paper can be found at:
 
 https://arxiv.org/abs/2006.11239
+
+After hundreds of epochs of training and tweaking the diffusion process (removing unecessary residual and attention blocks, increasing the number of neural net layers for time embeddings (so time embeddings are added to the latent vector in steps of (1, 320) -> (320, 640) -> (640, 1024) rather than jumping from (1,320) -> (320,1024)). 
 
 ## Image Segmentation
  
