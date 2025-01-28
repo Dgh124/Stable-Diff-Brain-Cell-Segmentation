@@ -13,9 +13,9 @@ A couple outlining features about the project:
 
 The development process went as follows:
 1. Train and optimize weights for VAE (Variational Autoencoder)
-    - Loss function: MSE + beta * KL Divergence
-    - MSE is used to find mean squared error of the difference between each pixel in input image & output
-    - KL divergence term calculates distance from one distribution to another, in this case I used normal distr. (mean=0, std=1.0)
+    - **Loss function**: MSE + beta * KL Divergence
+    - **MSE** is used to find mean squared error of the difference between each pixel in input image & output
+    - **KL** divergence term calculates distance from one distribution to another, in this case I used normal distr. (mean=0, std=1.0)
  What has been accomplished thus far, is a modified Stable Diffusion model that produces 
  
 ![Screenshot 2025-01-28 at 3 45 37 PM](https://github.com/user-attachments/assets/6c120037-6209-436b-a6c8-a8140d811a0d)
