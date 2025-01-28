@@ -20,7 +20,7 @@ The development process went as follows:
     - **Loss function**: MSE + beta * KL Divergence
     - **MSE** is used to find mean squared error of the difference between each pixel in input image & output
     - **KL** divergence term calculates distance from one distribution to another, in this case I used normal distr. (mean=0, std=1.0)
-    - __Optimizer__: SDG + lr-scheduler 
+    - __Optimizer__: SDG with momentum + lr-scheduler 
  2. Loss reached a minimum of ~0.003076
 
 Below is a progression of model improvement in reconstructing images over time.
