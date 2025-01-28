@@ -5,6 +5,6 @@
 
 A couple notes about the project:
 * All training images come from a publicly available Electron Microscopy Dataset, linked below:
- * https://www.epfl.ch/labs/cvlab/data/data-em/
+    * https://www.epfl.ch/labs/cvlab/data/data-em/
 
  What has been accomplished thus far, is a modified Stable Diffusion model that produces 
