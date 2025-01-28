@@ -1,4 +1,4 @@
- # Stable-Diff-Brain-Cell-Segmentation
+ ## Stable-Diff-Brain-Cell-Segmentation
  This project aims to build a pipeline that feeds generated training data (brain cell scans) into an image segmentation model that can output cell shape, size and positioning. There are two main goals for this project. <br><br>
  (1) Train a modified Stable Diffusion model (based on DDPM) to create realistic cell scans. <br>
  (2) Optimize a U-net based segmentation model to predict grayscale cell body masks. <br> 
@@ -39,5 +39,6 @@ During stable diffusion, noise is first added according to a beta-scheduler. Thi
 <img width="1033" alt="Screenshot 2025-01-28 at 5 09 33 PM" src="https://github.com/user-attachments/assets/808c2cc6-5470-4618-906a-0ba3b6da21b3" />
 Courtesy of Umar Jamil 
 
+## Image Segmentation
  
 ![Screenshot 2025-01-28 at 3 45 37 PM](https://github.com/user-attachments/assets/6c120037-6209-436b-a6c8-a8140d811a0d)
