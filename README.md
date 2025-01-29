@@ -4,7 +4,7 @@
  (2) Optimize a U-net based segmentation model to predict grayscale cell body masks. <br> 
 
 ## Where the data comes from and info
-* All training images come are originally in tif format and come from a publicly available Electron Microscopy Dataset, linked below:
+* All training images are originally in tif format and come from a publicly available Electron Microscopy Dataset, linked below:
     * https://www.epfl.ch/labs/cvlab/data/data-em/
 * Tif images were originally 1024x768, broken into 12 256x256 chunks for training
 * Images are kept grayscale and normalized with a mean=0.5 and std=0.5 for enhanced performance
