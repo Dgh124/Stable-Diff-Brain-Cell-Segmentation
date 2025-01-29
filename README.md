@@ -56,8 +56,7 @@ This model follows the standard U-net architecture. It utilizes encode/decode bl
 
 The model was trained in a supervised manner and optimized with ground truth image masks. Below is an example of a scan and its respective mask:
 
-
-<img width="662" alt="Screenshot 2025-01-28 at 7 09 48 PM" src="https://github.com/user-attachments/assets/4b776cc9-496f-414b-9a5a-86b7fe0ce522" />
+<img width="662" alt="Screenshot 2025-01-28 at 7 09 48 PM" src="https://github.com/user-attachments/assets/4b776cc9-496f-414b-9a5a-86b7fe0ce522" /> <br>
 
 The model outputs a 256x256 prediction mask, where each pixel has a probability on the scale 0-1.0. By adjusting the threshold for this probability, one can choose their strength of likelihood for what the mask looks like. A good cutoff has centered around ~0.05. Below is an example output from a model with loss ~0.21. <br>
  
