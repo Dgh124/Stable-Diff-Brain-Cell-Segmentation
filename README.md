@@ -3,7 +3,7 @@
  (1) Train a modified Stable Diffusion model (based on DDPM) to create realistic cell scans. <br>
  (2) Optimize a U-net based segmentation model to predict grayscale cell body masks. <br> 
 
-A couple outlining features about the project:
+## Where the data comes from and info
 * All training images come are originally in tif format and come from a publicly available Electron Microscopy Dataset, linked below:
     * https://www.epfl.ch/labs/cvlab/data/data-em/
 * Tif images were originally 1024x768, broken into 12 256x256 chunks for training
@@ -52,7 +52,14 @@ After hundreds of epochs of training and tweaking the diffusion process (removin
 
 This model follows the standard U-net architecture. It utilizes encode/decode blocks + residual to capture relevant details about cell shapes. <br>
 * __Loss function__: binary cross entropy + iou (intersection over union)
-* __Optimizer__: Adam + lr-scheduler
+* __Optimizer__: Adam + lr-scheduler <br> 
+
+The model was trained in a supervised manner and optimized with ground truth image masks. Below is an example of a scan and its mask:
+
+
+<img width="662" alt="Screenshot 2025-01-28 at 7 09 48 PM" src="https://github.com/user-attachments/assets/4b776cc9-496f-414b-9a5a-86b7fe0ce522" />
+
+
  
 ![Screenshot 2025-01-28 at 3 45 37 PM](https://github.com/user-attachments/assets/6c120037-6209-436b-a6c8-a8140d811a0d)
 
