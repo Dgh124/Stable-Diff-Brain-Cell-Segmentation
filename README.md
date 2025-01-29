@@ -10,15 +10,10 @@
 * This expansion generated 12,780 unique chunks for training/validation
 * Images are kept grayscale and normalized with a mean=0.5 and std=0.5 for enhanced performance
 
-## General training procedure
-
-Stable diffusion training was done in PyTorch. To make up for low GPU ram, training was often performed with __gradient accumulation__ and larger batch sizes.
-
-For image segmentation, model.fit() was used in Tensorflow. 
-
-Both sets incorporated a learning rate scheduler, and used validation loss for optimization. More specific details are listed under each section.
-
 # How were the models trained?
+
+Stable diffusion training was done in PyTorch. For image segmentation, model.fit() was used in Tensorflow. 
+To make up for low GPU ram, training was often performed with __gradient accumulation__ and larger batch sizes. Both sets incorporated a learning rate scheduler, and used validation loss for optimization. They also used checkpoint callbacks that saved the best models so far, and reverted to earlier ones after x epochs of no improvement. More specific details are listed under each section.
 
 I initially trained the img. segmentation model and VAE on my Macbook MPS. When the intensity of the project increased, I moved to Google Colab and trained on Nvidia GPUs. I currently use Georgia Tech's PACE-ICE cluster and train on the CUDA enabled GPUs they provide (likewise Nvidia). My favorite go to has been the L40 with around ~25g of ram.
 
