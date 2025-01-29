@@ -3,11 +3,20 @@
  (1) Train a modified Stable Diffusion model (based on DDPM) to create realistic cell scans. <br>
  (2) Optimize a U-net based segmentation model to predict grayscale cell body masks. <br> 
 
-## Where the data comes from/misc
-* All training images are originally in .tif format and come from a publicly available Electron Microscopy Dataset, linked below:
+## Where the data comes from
+* All images used are originally in .tif format and come from a publicly available Electron Microscopy Dataset, linked below:
     * https://www.epfl.ch/labs/cvlab/data/data-em/
-* Tif images were originally 1024x768, broken into 12 256x256 chunks for training
+* Tif images were originally 1024x768, broken into 12 256x256 chunks for training (per image)
+* This expansion generated 12,780 unique chunks for training/validation
 * Images are kept grayscale and normalized with a mean=0.5 and std=0.5 for enhanced performance
+
+## General training procedure
+
+Stable diffusion training was done in PyTorch. To make up for low GPU ram, training was often performed with __gradient accumulation__ and larger batch sizes.
+
+For image segmentation, model.fit() was used in Tensorflow. 
+
+Both sets incorporated a learning rate scheduler, and used validation loss for optimization. More specific details are listed under each section.
 
 # How were the models trained?
 
@@ -36,6 +45,9 @@ And here are two samples with the highest performing model. A slight amount of n
 # Stable Diffusion - Diffusion portion
 
 During stable diffusion, noise is first added according to a beta-scheduler. This algorithm also encodes a timestep vector at which the noise was added (positional encoding), s.t the model is given context to infer how much noise is present based on the time embedding. Below is a visual overview of the diffusion process this project follows, without the use of CLIP text embeddings (no need to train on a prompt - all images are of brain cells).
+
+* All training done through __pipeline.py__ train_model() func!
+* __Loss function__: MSE 
 
 <img width="1033" alt="Screenshot 2025-01-28 at 5 09 33 PM" src="https://github.com/user-attachments/assets/808c2cc6-5470-4618-906a-0ba3b6da21b3" />
 Courtesy of Umar Jamil <br>
