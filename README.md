@@ -3,7 +3,7 @@
  (1) Train a modified Stable Diffusion model (based on DDPM) to create realistic cell scans. <br>
  (2) Optimize a U-net based segmentation model to predict grayscale cell body masks. <br> 
 
-## Where the data comes from and info
+## Where the data comes from/misc
 * All training images are originally in .tif format and come from a publicly available Electron Microscopy Dataset, linked below:
     * https://www.epfl.ch/labs/cvlab/data/data-em/
 * Tif images were originally 1024x768, broken into 12 256x256 chunks for training
