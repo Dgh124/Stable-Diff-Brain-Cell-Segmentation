@@ -52,7 +52,8 @@ During stable diffusion, noise is first added according to a beta-scheduler. Thi
 <img width="1033" alt="Screenshot 2025-01-28 at 5 09 33 PM" src="https://github.com/user-attachments/assets/808c2cc6-5470-4618-906a-0ba3b6da21b3" />
 Courtesy of Umar Jamil <br>
 
-Once more, the math behind this model is very complex and based on the 2020 paper "Denoising and Diffusing Probabalistic Models" by Jonathan Ho, Ajay Jain, Pieter Abbeel. The pdf of this paper can be found at:
+
+Once more, the math behind this model is very complex and based on the 2020 paper "Denoising and Diffusing Probabalistic Models" by Jonathan Ho, Ajay Jain, Pieter Abbeel. It is a bit too lengthy to go into in the README, but the pdf of this paper can be found at:
 
 https://arxiv.org/abs/2006.11239
 
