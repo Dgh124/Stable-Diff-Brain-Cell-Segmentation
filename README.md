@@ -7,7 +7,7 @@
 
 Essentially all model/training files and some samples from the training dataset. Unfortunately, the model files are too large to upload to Git (25MB file size limit), but I am looking into workarounds for this (potentially Dropbox).
 
-## Where the data comes from
+## Where does the data come from?
 * All images used are originally in .tif format and come from a publicly available Electron Microscopy Dataset, linked below:
     * https://www.epfl.ch/labs/cvlab/data/data-em/
 * Tif images were originally 1024x768, broken into 12 256x256 chunks for training (per image)
