@@ -3,6 +3,10 @@
  (1) Train a modified Stable Diffusion model (based on DDPM) to create realistic cell scans. <br>
  (2) Optimize a U-net based segmentation model to predict grayscale cell body masks. <br> 
 
+## Whats in the repo?
+
+Essentially all model/training files and some samples from the training dataset. Unfortunately, the model files are too large to upload to Git (25MB file size limit), but I am looking into workarounds for this (potentially Dropbox).
+
 ## Where the data comes from
 * All images used are originally in .tif format and come from a publicly available Electron Microscopy Dataset, linked below:
     * https://www.epfl.ch/labs/cvlab/data/data-em/
@@ -16,6 +20,7 @@ Stable diffusion training was done in PyTorch. For image segmentation, model.fit
 To make up for low GPU ram, training was often performed with __gradient accumulation__ and larger batch sizes. Both sets incorporated a learning rate scheduler, and used validation loss for optimization. They also used checkpoint callbacks that saved the best models so far, and reverted to earlier ones after x epochs of no improvement. More specific details are listed under each section.
 
 I initially trained the img. segmentation model and VAE on my Macbook MPS. When the intensity of the project increased, I moved to Google Colab and trained on Nvidia GPUs. I currently use Georgia Tech's PACE-ICE cluster and train on the CUDA enabled GPUs they provide (likewise Nvidia). My favorite go to has been the L40 with around ~25g of ram.
+
 
 # Stable Diffusion - Variational Autoencoder portion
 
