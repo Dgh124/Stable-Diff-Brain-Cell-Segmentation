@@ -21,6 +21,7 @@ To make up for low GPU ram, training was often performed with __gradient accumul
 
 I initially trained the img. segmentation model and VAE on my Macbook MPS. When the intensity of the project increased, I moved to Google Colab and trained on Nvidia GPUs. I currently use Georgia Tech's PACE-ICE cluster and train on the CUDA enabled GPUs they provide (likewise Nvidia). My favorite go to has been the L40 with around ~25g of ram.
 
+![Screenshot 2025-01-31 at 6 50 36 PM](https://github.com/user-attachments/assets/a8e13e03-a701-4a18-8527-8cd2c0d73bff)
 
 # Stable Diffusion - Variational Autoencoder portion
 
