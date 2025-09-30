@@ -81,3 +81,5 @@ As you can see, it is able to roughly identify the shape, size and positioning o
 ## Why use AI generated data in training?
 
 While it is true that, in respect to LLMs, training models on synthetic data leads to model collapse - this is mostly due to the model learning weights of the model it's data was produced by. The immediate outcome is a loss of diversity in training data, and a model that performs poorly on real data. The goal of training a stable diffusion model on brain cell scans is not to replace real data - it is to supplement real data with rarer cell types that are underrepresented in publicly available datasets. This can help the model learn to identify signs associated with rare diseases. Another reason is simply that, as generated content continues to be consumed more and more, it is expected that one day they will be used to train themselves. As such, building the infrastructure that experiments with this process is important, and its effect can be measured in a meaningful way.
+
+# What I learned about generating synthetic data for training
