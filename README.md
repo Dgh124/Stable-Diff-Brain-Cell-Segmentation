@@ -12,7 +12,7 @@ Essentially all model/training files and some samples from the training dataset.
     * https://www.epfl.ch/labs/cvlab/data/data-em/
 * Tif images were originally 1024x768, broken into 12 256x256 chunks for training (per image)
 * This expansion generated 12,780 unique chunks for training/validation
-* Images are kept grayscale and normalized with a mean=0.5 and std=0.5 for enhanced performance
+* Images are kept grayscale and normalized with a mean=0.5 and std=0.5 for enhanced performance (closer to standard N(0,1))
 
 # How were the models trained?
 
