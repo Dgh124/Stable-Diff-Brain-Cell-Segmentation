@@ -102,7 +102,7 @@ While it is true that, in respect to LLMs, training models on synthetic data lea
 
 # What I learned about generating synthetic data for training
 
-I will first critique my approach on a technical code-level (look at flaws and fixes), then a general design choice level that reflects the then "current" limitations of diffusion models. 
+I will first critique my approach on a technical code-level (look at flaws and fixes), then a general design choice level that reflects the then "current" limitations of diffusion models. Below are 10 crucial design choices I will evaluate in high technical detail.
 
 ## Technical critiques
 
