@@ -58,9 +58,27 @@ Once more, the math behind this model is very complex and based on the 2020 pape
 
 https://arxiv.org/abs/2006.11239
 
-After hundreds of epochs of training and tweaking the diffusion process (removing unecessary residual and attention blocks, increasing the number of neural net layers for time embeddings (so time embeddings are added to the latent vector in steps of (1, 320) -> (320, 640) -> (640, 1024) rather than jumping from (1,320) -> (320,1024)). Training was performed with 1000 timesteps, and sampling from the model works quite well with just 50.
+After hundreds of epochs of training and tweaking the diffusion process (removing unecessary residual and attention blocks, increasing the number of neural net layers for time embeddings (so time embeddings are added to the latent vector in steps of (1, 320) -> (320, 640) -> (640, 1024) rather than jumping from (1,320) -> (320,1024)). Training was performed with 1000 timesteps, and sampling from the model works with just 50. Below are some sample images generated at runtime.
 
-![WhatsApp Image 2025-01-09 at 16 31 17](https://github.com/user-attachments/assets/4e635200-0af4-47d1-88df-bf7077e8c5fe)
+**Attention batch 1**
+
+<img width="256" height="256" alt="sample_0" src="https://github.com/user-attachments/assets/00f651f7-15dd-4487-ae85-27199118ff3c" />
+<img width="256" height="256" alt="sample_2" src="https://github.com/user-attachments/assets/4f7565fd-c552-42c5-9478-159cef8f8205" />
+<img width="256" height="256" alt="sample_5" src="https://github.com/user-attachments/assets/e0ba31d9-6eec-4ef4-b28f-af05cdb51f77" />
+
+**Attention batch 2**
+
+<img width="256" height="256" alt="sample_5" src="https://github.com/user-attachments/assets/108714a4-356b-4fcf-b6c5-a913a15f4c10" />
+<img width="256" height="256" alt="sample_4" src="https://github.com/user-attachments/assets/b2bee1e8-908b-4a22-b90a-0a5a5a3a57c4" />
+<img width="256" height="256" alt="sample_3" src="https://github.com/user-attachments/assets/a05483e6-8605-42c5-bbf6-a8e4dd047b73" />
+
+**Attention batch 3** 
+
+<img width="256" height="256" alt="sample_7" src="https://github.com/user-attachments/assets/c6963ac4-5877-43e7-b9f2-6aeb44cc3983" />
+<img width="256" height="256" alt="sample_2" src="https://github.com/user-attachments/assets/bfca1814-f3a9-4d7b-b787-f9f42f39d100" />
+<img width="256" height="256" alt="sample_1" src="https://github.com/user-attachments/assets/1b4a19ac-5010-4210-ad9b-96eee90769bf" />
+
+These images are clearly un-usable as synthetic training data, and I will discuss some of the flaws of my approach that led to these results under "What I learned about generating synthetic data for training".
 
 ## Image Segmentation
 
@@ -83,3 +101,78 @@ As you can see, it is able to roughly identify the shape, size and positioning o
 While it is true that, in respect to LLMs, training models on synthetic data leads to model collapse - this is mostly due to the model learning weights of the model it's data was produced by. The immediate outcome is a loss of diversity in training data, and a model that performs poorly on real data. The goal of training a stable diffusion model on brain cell scans is not to replace real data - it is to supplement real data with rarer cell types that are underrepresented in publicly available datasets. This can help the model learn to identify signs associated with rare diseases. Another reason is simply that, as generated content continues to be consumed more and more, it is expected that one day they will be used to train themselves. As such, building the infrastructure that experiments with this process is important, and its effect can be measured in a meaningful way.
 
 # What I learned about generating synthetic data for training
+
+I will first critique my approach on a technical code-level (look at flaws and fixes), then a general design choice level that reflects the then "current" limitations of diffusion models. 
+
+### Technical critiques
+
+unet_diffusion.py · UNet forward path lacks timestep conditioning
+Issue: The forward(x, t) accepts t but it is not embedded or injected into blocks. The denoiser learns a single average denoise → blurred samples across noise levels.
+Fix: Add sinusoidal timestep embeddings → MLP → inject via FiLM/affine modulation into every ResBlock (both down/bridge/up paths) and into attention blocks.
+Outcome: Noise-level–aware denoising, sharper late-step details, reduced over-smoothing.
+
+unet_diffusion.py · UpBlock merge under-parameterized
+Issue: In UpBlock, features are upsampled and then merged with skip features via only one residual stage; use_attention=False by default. The concatenated tensor (in_ch + skip_ch) is compressed too quickly.
+Fix: Keep use_attention=True; insert two ResBlocks post-merge (merge → Res → Attn → Res). Use GroupNorm; widen channels before projecting to out_ch.
+Outcome: Better skip fusion and spatial alignment; preserves high-freq membranes after upsampling.
+
+unet_diffusion.py · DownBlock lacks anti-aliasing before strided conv
+Issue: Strided convs downsample without anti-aliasing, causing ringing and loss of fine boundaries.
+Fix: Add blur/avg-pool anti-aliasing (e.g., 3×3 blur) before each stride-2 downsample.
+Outcome: Cleaner feature pyramids; less aliasing of thin EM structures.
+
+unet_diffusion.py · Attention missing at highest and lowest resolutions
+Issue: Self-attention is absent or disabled at 16×16/32×32 and 128×128/256×256 stages; only mid-res sees global context.
+Fix: Enable attention at lowest (bridge) and one high-res stage; use relative positional encodings.
+Outcome: Global morphology consistency + high-res texture anchoring.
+
+vae_encoder.py · Excessive compression without skip pathways
+Issue: 256×16×16 (65,536) features collapse straight to a small latent_dim via a single FC; no residual/attention; no skip connections to decoder. High-freq detail lost before diffusion.
+Fix: Increase latent_dim (e.g., 512–1024); replace FC with conv bottleneck; add ResBlocks + GroupNorm; optionally self-attention at 32×32/16×16.
+Outcome: Richer latent preserving edges/textures that the decoder and diffusion can recover.
+
+vae_decoder.py · Output activation mismatched with dataset normalization
+Issue: Decoder ends with sigmoid (0–1), while training pipeline normalizes images to mean=0.5, std=0.5 (≈[-1,1]). This compresses contrast or forces ad-hoc re-scaling.
+Fix: If the dataset is standardized to [-1,1], end with tanh and compute losses in standardized space; otherwise keep data in [0,1] end-to-end and remove standardization.
+Outcome: Correct dynamic range; better micro-contrast and less desaturation.
+
+vae_* + training loop · MSE-only objective encourages smoothness
+Issue: Both VAE recon and diffusion training use MSE only; pixelwise loss averages out fine texture.
+Fix: Add perceptual loss (LPIPS/SSIM) to VAE; optionally a light GAN loss (patch-GAN) at decoder output; for diffusion, add edge-aware auxiliary loss on late steps.
+Outcome: Preserves membrane/nuclear boundaries while keeping stability.
+
+unet_diffusion.py · Sampler and β-schedule are vanilla linear
+Issue: Linear β with few sampling steps (~50) limits micro-detail; late steps under-refine.
+Fix: Use cosine β schedule; implement DDIM / DPM-Solver samplers; allocate more steps to the last 20–30% of the trajectory; maintain EMA weights for sampling.
+Outcome: Sharper reconstructions at equal wall-clock; better edge recovery.
+
+unet_diffusion.py · Image-space diffusion only, no structure conditioning
+Issue: Unconditional image-space DDPM drifts; lacks constraints to preserve EM morphology.
+Fix: Add a ControlNet-style branch conditioned on Canny/Sobel edges or coarse masks (downsampled) and inject into UNet at each scale.
+Outcome: Structure-anchored synthesis; edges align with plausible anatomy.
+
+vae_* + unet_diffusion.py · Single-stage 256×256 training limits fidelity
+Issue: Trying to get both global shape and micro-texture at 256 in one go forces trade-offs.
+Fix: Move to latent-space diffusion (diffuse at 16×16 with VAE latents) or adopt a two-stage cascade: base 256 → super-resolution diffusion to 512/1024 with perceptual loss.
+Outcome: Base model captures semantics; SR stage restores fine EM texture critical for segmentation.
+
+What these fixes accomplish overall:
+Make the denoiser noise-aware, stop throwing away detail in the VAE, align activation ranges with preprocessing, impose perceptual/edge constraints, and add multiscale + conditioning. Together, these changes directly target the observed blur and produce synthetic EM images that hold up under downstream Dice/IoU checks.
+
+### Issues with choosing stable diffusion over traditional data augmentation
+
+In 2024, latent diffusion was excellent for natural images, but it was a poor first tool for my goal: increasing *rare* cellular examples for segmentation. Classic augmentations are cheap, label-preserving, auditable, and run inline with training. Stable Diffusion requires training a large generator and then sampling full images. That is far more compute, more code, and more moving parts. My compute was not the limiting factor. Time-to-useful-data and operational complexity were.
+
+Diffusion learns the empirical data distribution. Rare phenomena live in the tails. With few rare exemplars, the model underfits those tails and gravitates to the mean. Generated images look plausible but trend toward average morphologies. That is the opposite of what I needed. Without strong structure conditioning and carefully curated rare cases, the model interpolates common modes and hallucinates the rest.
+
+There is also an objective mismatch. The diffusion loss predicts noise under an MSE-style objective. That optimizes for per-pixel agreement, not morphological correctness. Coupled with a VAE bottleneck, high-frequency boundaries get smoothed. Segmentation depends on those boundaries. Classic augmentations preserve geometry while diversifying appearance in controlled ways (e.g., elastic, intensity, noise). They expand coverage along axes that matter and keep labels exact.
+
+Labeling is a hard blocker. Synthetic images are not useful for supervised segmentation unless masks are correct. I did not have a reliable mask-to-image or simulation-first pipeline. Post-hoc masks from my own segmenter would introduce label noise. Classic augmentations keep labels by construction or transform them deterministically. That keeps supervision clean.
+
+Validation was another gap. I did not have ongoing access to domain experts to confirm that generated structures were anatomically consistent with EM biology. Visual plausibility is not enough. Without expert review and a pre-registered downstream test (train on synthetic + small real, evaluate on held-out real), it is easy to drift the distribution. Augmentations are simpler to validate. They are transparent and bounded.
+
+Finally, sample efficiency matters. Generating a new image is expensive. Augmentations reuse scarce real images and multiply them with simple transforms. That improves class balance fast. It also integrates directly into training loops without new infrastructure.
+
+Net: Stable Diffusion can help, but only after I have domain-aware constraints and guardrails. That means a sharper microscopy-tuned autoencoder, structure conditioning (edges or masks), cascaded super-resolution, and a utility-first gate with expert review. Starting with diffusion before I had those pieces—and before I had rigorous validation—was the wrong order. For rare-class scarcity, the right baseline is targeted sampling plus classic augmentation, with strict class balancing and physics-aware noise/PSF simulation as needed. Generative models come later, and only if they prove downstream utility.
+
+
