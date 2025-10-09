@@ -106,58 +106,58 @@ I will first critique my approach on a technical code-level (look at flaws and f
 
 ## Technical critiques
 
-unet_diffusion.py · UNet forward path lacks timestep conditioning
+1. unet_diffusion.py · UNet forward path lacks timestep conditioning
 Issue: The forward(x, t) accepts t but it is not embedded or injected into blocks. The denoiser learns a single average denoise → blurred samples across noise levels.
 Fix: Add sinusoidal timestep embeddings → MLP → inject via FiLM/affine modulation into every ResBlock (both down/bridge/up paths) and into attention blocks.
 Outcome: Noise-level–aware denoising, sharper late-step details, reduced over-smoothing.
 
-unet_diffusion.py · UpBlock merge under-parameterized
+2. unet_diffusion.py · UpBlock merge under-parameterized
 Issue: In UpBlock, features are upsampled and then merged with skip features via only one residual stage; use_attention=False by default. The concatenated tensor (in_ch + skip_ch) is compressed too quickly.
 Fix: Keep use_attention=True; insert two ResBlocks post-merge (merge → Res → Attn → Res). Use GroupNorm; widen channels before projecting to out_ch.
 Outcome: Better skip fusion and spatial alignment; preserves high-freq membranes after upsampling.
 
-unet_diffusion.py · DownBlock lacks anti-aliasing before strided conv
+3. unet_diffusion.py · DownBlock lacks anti-aliasing before strided conv
 Issue: Strided convs downsample without anti-aliasing, causing ringing and loss of fine boundaries.
 Fix: Add blur/avg-pool anti-aliasing (e.g., 3×3 blur) before each stride-2 downsample.
 Outcome: Cleaner feature pyramids; less aliasing of thin EM structures.
 
-unet_diffusion.py · Attention missing at highest and lowest resolutions
+4. unet_diffusion.py · Attention missing at highest and lowest resolutions
 Issue: Self-attention is absent or disabled at 16×16/32×32 and 128×128/256×256 stages; only mid-res sees global context.
 Fix: Enable attention at lowest (bridge) and one high-res stage; use relative positional encodings.
 Outcome: Global morphology consistency + high-res texture anchoring.
 
-vae_encoder.py · Excessive compression without skip pathways
+5. vae_encoder.py · Excessive compression without skip pathways
 Issue: 256×16×16 (65,536) features collapse straight to a small latent_dim via a single FC; no residual/attention; no skip connections to decoder. High-freq detail lost before diffusion.
 Fix: Increase latent_dim (e.g., 512–1024); replace FC with conv bottleneck; add ResBlocks + GroupNorm; optionally self-attention at 32×32/16×16.
 Outcome: Richer latent preserving edges/textures that the decoder and diffusion can recover.
 
-vae_decoder.py · Output activation mismatched with dataset normalization
+6. vae_decoder.py · Output activation mismatched with dataset normalization
 Issue: Decoder ends with sigmoid (0–1), while training pipeline normalizes images to mean=0.5, std=0.5 (≈[-1,1]). This compresses contrast or forces ad-hoc re-scaling.
 Fix: If the dataset is standardized to [-1,1], end with tanh and compute losses in standardized space; otherwise keep data in [0,1] end-to-end and remove standardization.
 Outcome: Correct dynamic range; better micro-contrast and less desaturation.
 
-vae_* + training loop · MSE-only objective encourages smoothness
+7. vae_* + training loop · MSE-only objective encourages smoothness
 Issue: Both VAE recon and diffusion training use MSE only; pixelwise loss averages out fine texture.
 Fix: Add perceptual loss (LPIPS/SSIM) to VAE; optionally a light GAN loss (patch-GAN) at decoder output; for diffusion, add edge-aware auxiliary loss on late steps.
 Outcome: Preserves membrane/nuclear boundaries while keeping stability.
 
-unet_diffusion.py · Sampler and β-schedule are vanilla linear
+8. unet_diffusion.py · Sampler and β-schedule are vanilla linear
 Issue: Linear β with few sampling steps (~50) limits micro-detail; late steps under-refine.
 Fix: Use cosine β schedule; implement DDIM / DPM-Solver samplers; allocate more steps to the last 20–30% of the trajectory; maintain EMA weights for sampling.
 Outcome: Sharper reconstructions at equal wall-clock; better edge recovery.
 
-unet_diffusion.py · Image-space diffusion only, no structure conditioning
+9. unet_diffusion.py · Image-space diffusion only, no structure conditioning
 Issue: Unconditional image-space DDPM drifts; lacks constraints to preserve EM morphology.
 Fix: Add a ControlNet-style branch conditioned on Canny/Sobel edges or coarse masks (downsampled) and inject into UNet at each scale.
 Outcome: Structure-anchored synthesis; edges align with plausible anatomy.
 
-vae_* + unet_diffusion.py · Single-stage 256×256 training limits fidelity
+10. vae_* + unet_diffusion.py · Single-stage 256×256 training limits fidelity
 Issue: Trying to get both global shape and micro-texture at 256 in one go forces trade-offs.
 Fix: Move to latent-space diffusion (diffuse at 16×16 with VAE latents) or adopt a two-stage cascade: base 256 → super-resolution diffusion to 512/1024 with perceptual loss.
 Outcome: Base model captures semantics; SR stage restores fine EM texture critical for segmentation.
 
 What these fixes accomplish overall:
-Make the denoiser noise-aware, stop throwing away detail in the VAE, align activation ranges with preprocessing, impose perceptual/edge constraints, and add multiscale + conditioning. Together, these changes directly target the observed blur and produce synthetic EM images that hold up under downstream Dice/IoU checks.
+Make the denoiser aware of nosie, stop throwing away details in the VAE, align activation ranges with preprocessing, impose perceptual/edge constraints, and add multiscale + conditioning. Together, these changes directly target the observed blur and produce synthetic EM images that hold up under downstream Dice/IoU checks.
 
 ## Issues with choosing stable diffusion over traditional data augmentation
 
