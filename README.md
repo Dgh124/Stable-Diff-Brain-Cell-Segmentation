@@ -104,7 +104,7 @@ While it is true that, in respect to LLMs, training models on synthetic data lea
 
 I will first critique my approach on a technical code-level (look at flaws and fixes), then a general design choice level that reflects the then "current" limitations of diffusion models. 
 
-### Technical critiques
+## Technical critiques
 
 unet_diffusion.py · UNet forward path lacks timestep conditioning
 Issue: The forward(x, t) accepts t but it is not embedded or injected into blocks. The denoiser learns a single average denoise → blurred samples across noise levels.
@@ -159,7 +159,7 @@ Outcome: Base model captures semantics; SR stage restores fine EM texture critic
 What these fixes accomplish overall:
 Make the denoiser noise-aware, stop throwing away detail in the VAE, align activation ranges with preprocessing, impose perceptual/edge constraints, and add multiscale + conditioning. Together, these changes directly target the observed blur and produce synthetic EM images that hold up under downstream Dice/IoU checks.
 
-### Issues with choosing stable diffusion over traditional data augmentation
+## Issues with choosing stable diffusion over traditional data augmentation
 
 In 2024, latent diffusion was excellent for natural images, but it was a poor first tool for my goal: increasing *rare* cellular examples for segmentation. Classic augmentations are cheap, label-preserving, auditable, and run inline with training. Stable Diffusion requires training a large generator and then sampling full images. That is far more compute, more code, and more moving parts. My compute was not the limiting factor. Time-to-useful-data and operational complexity were.
 
